@@ -1,5 +1,6 @@
 package dao.model;
 
+import attachments.Attachment;
 import dao.MessageComparator;
 import sorteddata.SortedData;
 import sorteddata.SortedDataFactory;
