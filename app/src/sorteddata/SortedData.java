@@ -26,7 +26,7 @@ public abstract class SortedData<T> {
 
 	/**
 	 * Gets a particular element, in sorted order.
-	 * @param i the index of teh desired item
+	 * @param i the index of the desired item
 	 * @return the item at that index
 	 */
 	public abstract T getAtIndex(int i);
