@@ -42,7 +42,7 @@ Your code must compile to receive marks.
 
 Persistent data is currently written to a directory called `saved` by `ComputerIOFactory`. We recommend that you write images to the subdirectory `saved/img`, but this is not a requirement, as long as when the program is run multiple times from the same location, the files are written to the same place.
 
-Note that a single instance of the Image class may be used as an attachment to multiple Posts; you should not store the save image multiple times to save on disk space. In particular, this is done by creating a single instance of Image (call it `x`) and then calling `setAttachment(x)` on multiple posts.
+Note that a single instance of the Image class may be used as an attachment to multiple Posts; you should not store the same image multiple times to save on disk space. In particular, this is done by creating a single instance of Image (call it `x`) and then calling `setAttachment(x)` on multiple posts.
 
 [60%] You are also responsible for persisting image storage, so that the image contents of an Image, as well as its caption, are invariant across multiple runs of the program.
 
