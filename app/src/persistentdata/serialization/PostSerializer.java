@@ -1,6 +1,5 @@
 package persistentdata.serialization;
-import attachments.Attachment;
-import attachments.AttachmentStore;
+import attachments.*;
 import dao.model.Post;
 
 import java.util.UUID;
