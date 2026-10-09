@@ -1,5 +1,6 @@
 package attachments;
 
+import dao.model.HasUUID;
 import dao.model.User;
 
 import java.util.Collections;
@@ -7,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Poll extends Attachment {
+public class Poll extends Attachment implements HasUUID {
     private final String questionText;
     private final String[] options;
     private final Map<UUID, Integer> responses = new LinkedHashMap<>();
@@ -96,5 +97,11 @@ public class Poll extends Attachment {
             throw new IllegalArgumentException("Invalid response index");
         }
         responses.put(userId, optionIndex);
+    }
+
+    @Override
+    public UUID getUUID() {
+        //not finished rememberplease
+        return null;
     }
 }
