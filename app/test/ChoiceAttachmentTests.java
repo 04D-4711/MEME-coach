@@ -1,12 +1,17 @@
 package test;
 
 import attachments.Poll;
+import attachments.Quiz;
 import dao.model.Post;
 import dao.model.User;
+import org.junit.Test;
 
 import java.util.UUID;
 
-class ChoiceAttachmentTests {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+
+public static class ChoiceAttachmentTests {
     // TODO: task 4
     private static User user() {
         return new User(UUID.randomUUID(), User.Role.Member, "tester", "pass");
