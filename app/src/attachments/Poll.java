@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public class Poll extends Attachment implements HasUUID {
     private final String questionText;
+    private final UUID uuid;
     private final String[] options;
     private final Map<UUID, Integer> responses = new LinkedHashMap<>();
     public Poll(String questionText, String[] options) {
@@ -103,7 +104,6 @@ public class Poll extends Attachment implements HasUUID {
 
     @Override
     public UUID getUUID() {
-        //not finished rememberplease
-        return null;
+        return uuid;
     }
 }

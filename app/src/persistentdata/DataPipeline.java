@@ -62,9 +62,9 @@ public class DataPipeline<T, S> {
 		}
 	}
 
-//	private final DataPipeline<Post, String[]> postPipeline = new DataPipeline<>(IO,
-//			new CSVFormattedFactory(new CSVFormat(5)),
-//			new PostSerializer(),
-//			"posts"
-//	);
+	private final DataPipeline<Post, String[]> postPipeline = new DataPipeline<>(new ComputerIOFactory(){},
+			new CSVFormattedFactory(new CSVFormat(5)),
+			new PostSerializer(),
+			"posts"
+	);
 }
