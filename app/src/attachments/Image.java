@@ -7,7 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -102,7 +102,7 @@ public class Image extends Attachment {
      */
     public static Image makeExampleImage() {
         try {
-            return new Image(ImageIO.read(new URL(IMAGE_SOURCE)), "Cute kitten");
+            return new Image(ImageIO.read(URI.create(IMAGE_SOURCE).toURL()), "Cute kitten");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
