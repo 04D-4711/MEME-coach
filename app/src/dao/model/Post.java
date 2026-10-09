@@ -12,6 +12,7 @@ public class Post implements HasUUID {
 	public final UUID poster;
 	public final String topic;
     public final SortedData<Message> messages;
+	private Attachment attachment;
 
 	public Post(UUID id, UUID poster, String topic) {
 		this.id = id;
@@ -24,14 +25,15 @@ public class Post implements HasUUID {
 		this(id, null, null);
 	}
 	
+	/** Gives the attachment of this post, or null if it has none. */
 	public Attachment getAttachment() {
-        // TODO: task 1
-        return null;
-    }
-	
+		return attachment;
+	}
+
+	/** Sets or replaces the attachment of this post; null removes it. */
 	public void setAttachment(Attachment attachment) {
-        // TODO: task 1
-    }
+		this.attachment = attachment;
+	}
 
 	public UUID getUUID() { return id; }
 }
