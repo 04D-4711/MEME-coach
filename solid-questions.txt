@@ -3,3 +3,4 @@ Dependency inversion principle:
 
 Liskov substitution principle:
 // TODO: task 5
+// Pipeline test
