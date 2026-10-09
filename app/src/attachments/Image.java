@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.UUID;
 
-/** An attachment that shows one picture with a caption. */
+/** An attachment that shows one picture with a caption, kept on disk. */
 public class Image extends Attachment {
     private static final Path FOLDER = Path.of("saved", "img");
 
@@ -26,14 +26,14 @@ public class Image extends Attachment {
                 copy(Objects.requireNonNull(source, "Image source must not be null")));
         save();
     }
-    
+
     /** Makes an image from parts that are already on disk. */
     private Image(UUID id, String caption, BufferedImage picture) {
         this.id = id;
         this.caption = caption;
         this.picture = picture;
     }
-    
+
     /** Loads an image that was saved before, using its id. */
     public static Image load(UUID id) {
         try {
