@@ -14,6 +14,7 @@ public class Poll extends Attachment implements HasUUID {
     private final String[] options;
     private final Map<UUID, Integer> responses = new LinkedHashMap<>();
     public Poll(String questionText, String[] options) {
+        uuid = UUID.randomUUID();
         if (questionText == null || questionText.isBlank()) {
             throw new IllegalArgumentException("Question must not be empty");
         }
