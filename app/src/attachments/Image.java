@@ -20,9 +20,13 @@ public class Image extends Attachment {
     private final String caption;
     private final BufferedImage picture;
 
-
     /** Makes a new image and saves it to disk once. */
-
+    public Image(java.awt.Image source, String caption) {
+        this(UUID.randomUUID(), Objects.requireNonNull(caption, "Caption must not be null"),
+                copy(Objects.requireNonNull(source, "Image source must not be null")));
+        save();
+    }
+    
     /** Makes an image from parts that are already on disk. */
 
     /** Loads an image that was saved before, using its id. */
