@@ -11,6 +11,7 @@ public class ComputerIOFactory implements IOFactory {
 	@Override
 	public Writer writer(String filename) {
 		try {
+			new File(parseFullFilename(filename)).getParentFile().mkdirs();
 			return new FileWriter(parseFullFilename(filename));
 		} catch (IOException ignored) {
 			return null;
