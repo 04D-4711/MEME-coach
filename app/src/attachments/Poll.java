@@ -48,7 +48,7 @@ public class Poll extends Attachment implements HasUUID {
         return Collections.unmodifiableMap(responses);
     }
 
-    void makeSelection(User user, int optionIndex) {
+    public void makeSelection(User user, int optionIndex) {
         // TODO: task 3
         if (user == null|| user.id() == null) {
             throw new IllegalArgumentException("Invalid user");
@@ -61,7 +61,7 @@ public class Poll extends Attachment implements HasUUID {
         responses.put(user.id(), optionIndex);
     }
 
-    float getResult(int optionIndex) {
+    public float getResult(int optionIndex) {
         // TODO: task 3
 
 

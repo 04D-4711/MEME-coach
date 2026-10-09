@@ -11,7 +11,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-public class ChoiceAttachmentTests {
+public static class ChoiceAttachmentTests {
     // TODO: task 4
     private static User user() {
         return new User(UUID.randomUUID(), User.Role.Member, "tester", "pass");
