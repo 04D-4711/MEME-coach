@@ -67,8 +67,21 @@ public class Image extends Attachment {
     }
 
     /** Writes the picture and caption into new files named by the id. */
+    private void save() {
+        try {
+            Files.createDirectories(FOLDER);
+            if (Files.exists(file(id, "png"))) throw new PersistentDataException("Image " + id + " already exists");
+            if (!ImageIO.write(picture, "png", file(id, "png").toFile())) {
+                throw new PersistentDataException("Image " + id + " has no png writer");
+            }
+            Files.writeString(file(id, "txt"), caption);
+        } catch (IOException e) {
+            throw new PersistentDataException("Image " + id + " cannot be saved: " + e.getMessage());
+        }
+    }
 
     /** Gives the file for this id with the given ending. */
+    
 
     /** Turns any picture into a BufferedImage so it can be written. */
     private static BufferedImage copy(java.awt.Image source) {
