@@ -84,7 +84,7 @@ public class Poll extends Attachment implements HasUUID {
 
     @Override
     public int getInteractionCorrect(User user) {
-        return 0;
+        return NOT_APPLICABLE;
     }
 
     public void restoreResponse(UUID userId, int optionIndex) {

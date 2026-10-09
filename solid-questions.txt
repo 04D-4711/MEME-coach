@@ -1,5 +1,5 @@
 Dependency inversion principle:
-// TODO: task 5
+// QuizMarker depends on the Attachment abstraction rather than concrete classes such as Quiz, Poll, or Image. It calls getInteractionCorrect on Attachment, so new attachment types can define their own interaction behaviour without requiring QuizMarker to depend on their implementation details.
 
 Liskov substitution principle:
-// TODO: task 5
+// Image, Poll, and Quiz can be used wherever an Attachment is expected. Post stores an Attachment reference and setAttachment accepts any subtype without needing type-specific checks, while each subtype preserves the expected Attachment behavior.
