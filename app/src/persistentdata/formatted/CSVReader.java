@@ -95,6 +95,8 @@ public class CSVReader implements FormattedReader<String[]> {
 	}
 
 	public static class CSVIOException extends PersistentDataException {
+		private static final long serialVersionUID = 1L;
+
 		public CSVIOException(String message) {
 			super(message);
 		}

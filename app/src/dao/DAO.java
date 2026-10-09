@@ -9,7 +9,7 @@ import java.util.Iterator;
 public abstract class DAO<T extends HasUUID> {
 	protected DAO(Comparator<T> comparator) {
 		this.comparator = comparator;
-		clear();
+		data = SortedDataFactory.makeSortedData(comparator);
 	}
 
 	protected final Comparator<T> comparator;
