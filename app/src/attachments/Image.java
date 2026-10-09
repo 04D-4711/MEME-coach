@@ -81,7 +81,9 @@ public class Image extends Attachment {
     }
 
     /** Gives the file for this id with the given ending. */
-    
+    private static Path file(UUID id, String ending) {
+        return FOLDER.resolve(id + "." + ending);
+    }
 
     /** Turns any picture into a BufferedImage so it can be written. */
     private static BufferedImage copy(java.awt.Image source) {
