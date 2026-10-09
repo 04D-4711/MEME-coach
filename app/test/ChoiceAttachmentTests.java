@@ -71,7 +71,7 @@ private static Quiz attachedQuiz(String question) {
 @Test
 public void quizAllowsOneValidAnswerAndRejectsInvalidOrRepeatedSelections() {
     Quiz quiz = attachedQuiz("Choose the correct option");
-    User respondent = user();
+    User respondent = A.user();
 
     quiz.makeSelection(respondent, 1);
     assertEquals(1.0f, quiz.getResult(1), 0.0001f);
@@ -81,7 +81,7 @@ public void quizAllowsOneValidAnswerAndRejectsInvalidOrRepeatedSelections() {
     assertThrows(IllegalStateException.class, () -> quiz.makeSelection(respondent, 0));
 
     // A new respondent cannot submit an out-of-range quiz answer.
-    assertThrows(IllegalArgumentException.class, () -> quiz.makeSelection(user(), -1));
+    assertThrows(IllegalArgumentException.class, () -> quiz.makeSelection(ChoiceAttachmentTests.user(), -1));
 
     // Invalid indices are handled without throwing by getResult.
     assertEquals(0.0f, quiz.getResult(-1), 0.0001f);
