@@ -91,3 +91,4 @@ public void quizAllowsOneValidAnswerAndRejectsInvalidOrRepeatedSelections() {
     Quiz emptyQuiz = attachedQuiz("No quiz responses yet");
     assertEquals(0.0f, emptyQuiz.getResult(0), 0.0001f);
 }
+
