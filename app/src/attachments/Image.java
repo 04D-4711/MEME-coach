@@ -28,7 +28,12 @@ public class Image extends Attachment {
     }
     
     /** Makes an image from parts that are already on disk. */
-
+    private Image(UUID id, String caption, BufferedImage picture) {
+        this.id = id;
+        this.caption = caption;
+        this.picture = picture;
+    }
+    
     /** Loads an image that was saved before, using its id. */
 
     /** Tells if an image with this id is saved on disk. */
