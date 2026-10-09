@@ -1,5 +1,6 @@
 package persistentdata;
 
+import dao.model.Post;
 import persistentdata.formatted.*;
 import persistentdata.io.IOFactory;
 import persistentdata.serialization.*;
@@ -60,4 +61,10 @@ public class DataPipeline<T, S> {
 			throw new PersistentDataException(e.getMessage());
 		}
 	}
+
+//	private final DataPipeline<Post, String[]> postPipeline = new DataPipeline<>(IO,
+//			new CSVFormattedFactory(new CSVFormat(5)),
+//			new PostSerializer(),
+//			"posts"
+//	);
 }
