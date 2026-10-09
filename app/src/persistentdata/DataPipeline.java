@@ -2,6 +2,7 @@ package persistentdata;
 
 import dao.model.Post;
 import persistentdata.formatted.*;
+import persistentdata.io.ComputerIOFactory;
 import persistentdata.io.IOFactory;
 import persistentdata.serialization.*;
 import dao.*;
