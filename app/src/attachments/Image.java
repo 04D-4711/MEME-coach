@@ -35,6 +35,15 @@ public class Image extends Attachment {
     }
     
     /** Loads an image that was saved before, using its id. */
+    public static Image load(UUID id) {
+        try {
+            BufferedImage picture = ImageIO.read(file(id, "png").toFile());
+            if (picture == null) throw new PersistentDataException("Image " + id + " cannot be read");
+            return new Image(id, Files.readString(file(id, "txt")), picture);
+        } catch (IOException e) {
+            throw new PersistentDataException("Image " + id + " cannot be loaded: " + e.getMessage());
+        }
+    }
 
     /** Tells if an image with this id is saved on disk. */
     public static boolean isSaved(UUID id) {
