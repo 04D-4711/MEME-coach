@@ -50,6 +50,8 @@ public class Poll extends Attachment implements HasUUID {
 
     void makeSelection(User user, int optionIndex) {
         // TODO: task 3
+
+
         if (user == null|| user.id() == null) {
             throw new IllegalArgumentException("Invalid user");
         }
