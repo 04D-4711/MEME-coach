@@ -13,4 +13,5 @@ public abstract class Attachment implements HasUUID {
     // please implement this oops sorry
     public int getInteractionCorrect(User user) {
         return NOT_CORRECT;
-    }}
+    }
+}
