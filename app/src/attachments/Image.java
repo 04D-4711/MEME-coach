@@ -1,6 +1,7 @@
 package attachments;
 
 import persistentdata.PersistentDataException;
+import persistentdata.io.ComputerIOFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 /** An attachment that shows one picture with a caption, kept on disk. */
 public class Image extends Attachment {
-    private static final Path FOLDER = Path.of("saved", "img");
+    private static final Path FOLDER = Path.of(ComputerIOFactory.FOLDER, "img");
 
     private final UUID id;
     private final String caption;
@@ -47,7 +48,7 @@ public class Image extends Attachment {
 
     /** Tells if an image with this id is saved on disk. */
     public static boolean isSaved(UUID id) {
-        return Files.exists(file(id, "png"));
+        return Files.exists(file(id, "png")) && Files.exists(file(id, "txt"));
     }
 
     /** Gives the id that names this image on disk. */
