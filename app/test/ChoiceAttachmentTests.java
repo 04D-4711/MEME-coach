@@ -55,3 +55,34 @@ class ChoiceAttachmentTests {
         assertThrows(IllegalArgumentException.class, () -> poll.makeSelection(userWithoutId(), 0));
     }
 }
+
+private static Quiz attachedQuiz(String question) {
+    Quiz quiz = new Quiz(question, new String[]{"A", "B"}, 1);
+    Post post = new Post(UUID.randomUUID());
+    post.setAttachment(quiz);
+    return quiz;
+}
+
+@Test
+public void quizAllowsOneValidAnswerAndRejectsInvalidOrRepeatedSelections() {
+    Quiz quiz = attachedQuiz("Choose the correct option");
+    User respondent = user();
+
+    quiz.makeSelection(respondent, 1);
+    assertEquals(1.0f, quiz.getResult(1), 0.0001f);
+    assertEquals(0.0f, quiz.getResult(0), 0.0001f);
+
+    // A respondent cannot answer the same quiz twice.
+    assertThrows(IllegalStateException.class, () -> quiz.makeSelection(respondent, 0));
+
+    // A new respondent cannot submit an out-of-range quiz answer.
+    assertThrows(IllegalArgumentException.class, () -> quiz.makeSelection(user(), -1));
+
+    // Invalid indices are handled without throwing by getResult.
+    assertEquals(0.0f, quiz.getResult(-1), 0.0001f);
+    assertEquals(0.0f, quiz.getResult(2), 0.0001f);
+
+    // A valid option with no respondents has a zero result.
+    Quiz emptyQuiz = attachedQuiz("No quiz responses yet");
+    assertEquals(0.0f, emptyQuiz.getResult(0), 0.0001f);
+}
