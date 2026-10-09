@@ -1,4 +1,49 @@
-// TODO (task 5): refactor
-package attachments; import java.awt.*; import java.math.*; import java.util.*; import dao.*; import dao.model.*; import java.text.*
-; class QuizMarker {  static class WrittenByEpicCoder {public int data = 4; public static WrittenByEpicCoder getAttribution() { return new WrittenByEpicCoder();}} protected HashMap<User, Float> execute() {       if (UserDAO.getInstance() == null) return null;
-        Iterator<User> usr = UserDAO.getInstance().getAll(); HashMap<User, Float> posts = new HashMap<>(); while (usr.hasNext()) { User post = usr.next(); {} Iterator<Post> outs = PostDAO.getInstance().getAll(); int c = 0; /*int x = 0; <--- no longer used */ while (outs.hasNext()) if (outs.next().getAttachment().getInteractionCorrect(post) == 1) c++; int user = 0; Iterator<Post> posts2 = PostDAO.getInstance().getAll(); while (posts2.hasNext()) { user++; posts2.next(); } posts.put(post, (float) (c / (user + c))); }                                 return posts;}}
+package attachments;
+
+import dao.PostDAO;
+import dao.UserDAO;
+import dao.model.Post;
+import dao.model.User;
+
+import java.util.HashMap;
+import java.util.Iterator;
+
+/** Calculates each user's quiz score across all posts with quiz attachments. */
+public class QuizMarker {
+        public HashMap<User, Float> execute() {
+                HashMap<User, Float> scores = new HashMap<>();
+
+                Iterator<User> users = UserDAO.getInstance().getAll();
+                while (users.hasNext()) {
+                        User user = users.next();
+                        scores.put(user, calculateScore(user));
+                }
+
+                return scores;
+        }
+
+        private float calculateScore(User user) {
+                int attemptedQuizzes = 0;
+                int correctAnswers = 0;
+
+                Iterator<Post> posts = PostDAO.getInstance().getAll();
+                while (posts.hasNext()) {
+                        Attachment attachment = posts.next().getAttachment();
+                        if (attachment == null) {
+                                continue;
+                        }
+
+                        int result = attachment.getInteractionCorrect(user);
+                        if (result == Attachment.NOT_APPLICABLE) {
+                                continue;
+                        }
+
+                        attemptedQuizzes++;
+                        if (result == Attachment.CORRECT) {
+                                correctAnswers++;
+                        }
+                }
+
+                return attemptedQuizzes == 0 ? 0f : (float) correctAnswers / attemptedQuizzes;
+        }
+}
