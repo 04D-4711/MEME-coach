@@ -7,11 +7,11 @@ import java.util.UUID;
 
 /**
  * Converts between Posts and String[] by converting each field of Post
- * (UUID, poster, and topic) to a string, which becomes one of the entries
- * within the array
+ * (UUID, poster, topic, and attachment id) to a string, which becomes one of the entries
+ * within the array; a post without an attachment stores an empty string
  */
 public class PostSerializer implements Serializer<Post, String[]> {
-private static final String NO_ATTACHMENT = "";
+	private static final String NO_ATTACHMENT = "";
 
 	@Override
 	public String[] serialize(Post object) {
