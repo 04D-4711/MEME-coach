@@ -1,32 +1,56 @@
 package attachments;
 
+import persistentdata.PersistentDataException;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.UUID;
 
 /** An attachment that shows one picture with a caption. */
 public class Image extends Attachment {
+    private static final Path FOLDER = Path.of("saved", "img");
+
     private final UUID id;
     private final String caption;
     private final BufferedImage picture;
 
-    /** Makes a new image with a new id. */
-    public Image(java.awt.Image source, String caption) {
-        this(UUID.randomUUID(), Objects.requireNonNull(caption, "Caption must not be null"),
-                copy(Objects.requireNonNull(source, "Image source must not be null")));
+
+    /** Makes a new image and saves it to disk once. */
+
+    /** Makes an image from parts that are already on disk. */
+
+    /** Loads an image that was saved before, using its id. */
+
+    /** Tells if an image with this id is saved on disk. */
+    public static boolean isSaved(UUID id) {
+        return Files.exists(file(id, "png"));
     }
 
-    /** Makes an image from its id, caption and picture. */
-    private Image(UUID id, String caption, BufferedImage picture) {
-        this.id = id;
-        this.caption = caption;
-        this.picture = picture;
+    /** Gives the id that names this image on disk. */
+    @Override
+    public UUID getUUID() {
+        return id;
     }
+
+    /** Gives the caption of this image. */
+    public String getCaption() {
+        return caption;
+    }
+
+    /** Gives the picture of this image. */
+    public BufferedImage getPicture() {
+        return picture;
+    }
+
+    /** Writes the picture and caption into new files named by the id. */
+
+    /** Gives the file for this id with the given ending. */
 
     /** Turns any picture into a BufferedImage so it can be written. */
     private static BufferedImage copy(java.awt.Image source) {
