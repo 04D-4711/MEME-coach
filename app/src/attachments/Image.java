@@ -10,6 +10,8 @@ import java.net.URL;
 class Image {
     public Image(java.awt.Image source, String caption) {
         // TODO: task 1
+        this(UUID.randomUUID(), Objects.requireNonNull(caption, "Caption must not be null"),
+            copy(Objects.requireNonNull(source, "Image source must not be null")));
     }
 
     private static final String IMAGE_SOURCE = "https://images4.alphacoders.com/865/thumb-1920-86546.jpg";
