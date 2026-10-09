@@ -63,6 +63,8 @@ public class Poll extends Attachment implements HasUUID {
 
     float getResult(int optionIndex) {
         // TODO: task 3
+
+
         if (optionIndex <0 ||optionIndex >= options.length) {
             throw new IllegalArgumentException("Invalid option index");
         }
