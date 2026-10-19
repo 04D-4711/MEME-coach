@@ -11,7 +11,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-public static class ChoiceAttachmentTests {
+public class ChoiceAttachmentTests {
     // TODO: task 4
     private static User user() {
         return new User(UUID.randomUUID(), User.Role.Member, "tester", "pass");
@@ -59,7 +59,6 @@ public static class ChoiceAttachmentTests {
         assertThrows(IllegalArgumentException.class, () -> poll.makeSelection(null, 0));
         assertThrows(IllegalArgumentException.class, () -> poll.makeSelection(userWithoutId(), 0));
     }
-}
 
 private static Quiz attachedQuiz(String question) {
     Quiz quiz = new Quiz(question, new String[]{"A", "B"}, 1);
@@ -71,7 +70,7 @@ private static Quiz attachedQuiz(String question) {
 @Test
 public void quizAllowsOneValidAnswerAndRejectsInvalidOrRepeatedSelections() {
     Quiz quiz = attachedQuiz("Choose the correct option");
-    User respondent = A.user();
+    User respondent = user();
 
     quiz.makeSelection(respondent, 1);
     assertEquals(1.0f, quiz.getResult(1), 0.0001f);
@@ -90,5 +89,6 @@ public void quizAllowsOneValidAnswerAndRejectsInvalidOrRepeatedSelections() {
     // A valid option with no respondents has a zero result.
     Quiz emptyQuiz = attachedQuiz("No quiz responses yet");
     assertEquals(0.0f, emptyQuiz.getResult(0), 0.0001f);
+}
 }
 
