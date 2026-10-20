@@ -21,7 +21,7 @@ public record QuizFeedback(
                 + headline + "\n\n"
                 + "Question: " + question + "\n"
                 + "My answer: " + selectedAnswer + "\n"
-                + explanation;
+                + explanation + "Correct answer: " + correctAnswer + "\n";
     }
 }
 
