@@ -13,9 +13,37 @@ public class CSVReader implements FormattedReader<String[]> {
 		this.format = format;
 		this.reader = reader;
 	}
-	
+//原有问题：
+//
+//hasNext() 始终返回 true。
+// 因此，DataPipeline.readTo() 中的读取循环无法通过 hasNext() 正确判断文件是否已经读完，
+// 可能继续调用 getNext() 并导致读取失败。
+//
+//修改内容：
+//
+//增加 nextChar 字段，用于缓存预读字符。
+//修改 hasNext()：检查 EOF，并在没有缓存字符时预读一个字符。
+//修改 getNext() 的读取位置：优先使用缓存字符，避免预读后跳过数据。
 	private boolean eof = false;
+	private int nextChar = Integer.MIN_VALUE;
 	public boolean hasNext() {
+		if (eof) {
+			return false;
+		}
+
+		if (nextChar == Integer.MIN_VALUE) {
+			try {
+				nextChar = reader.read();
+			} catch (IOException e) {
+				throw new CSVIOException(e.getMessage());
+			}
+		}
+
+		if (nextChar == -1) {
+			eof = true;
+			return false;
+		}
+
 		return true;
 	}
 
@@ -45,7 +73,14 @@ public class CSVReader implements FormattedReader<String[]> {
 		while (true) {
 			char c = format.LINE_SEPARATOR;
 			try {
-				int i = reader.read();
+				int i;
+
+				if (nextChar != Integer.MIN_VALUE) {
+					i = nextChar;
+					nextChar = Integer.MIN_VALUE;
+				} else {
+					i = reader.read();
+				}
 				if (i == -1) {
 					if (inSpecialField) {
 						throw new CSVIOException(IMPROPER_ESCAPE_MESSAGE);
