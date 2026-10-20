@@ -1,0 +1,97 @@
+package com.example.comp2100hackthon;
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import dao.UserDAO;
+import dao.model.User;
+import memecoach.QuizFeedback;
+import java.util.Random;
+import java.util.HashMap;
+import java.util.concurrent.Executors;
+import androidx.core.content.ContextCompat;
+import memecoach.MemeCoachManager;
+import memecoach.TemplateFeedbackService;
+import memecoach.DemoExplanationProvider;
+
+// 引入真实的 QuizFeedback 类
+import memecoach.QuizFeedback;
+
+public class FeedbackActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_feedback);
+
+        // 1. 找到控件
+        ImageView imgMeme = findViewById(R.id.imgMeme);
+        TextView tvQuote = findViewById(R.id.tvQuote);
+        TextView tvCorrectAnswer = findViewById(R.id.tvCorrectAnswer);
+        TextView tvExplanation = findViewById(R.id.tvExplanation);
+        Button btnShareToPost = findViewById(R.id.btnShareToPost);
+        Button btnBackToQuiz = findViewById(R.id.btnBackToQuiz);
+
+        // 2. 接收从 QuizActivity 传过来的数据
+        // 注意：这里我们假设你在 QuizActivity 里传的是 QuizFeedback 对象
+        // (如果 Intent 传对象报错，我们需要让 QuizFeedback 实现 Serializable，或者直接传 String)
+        // 为了最稳妥，我直接用 String 传值。
+
+        String headline = getIntent().getStringExtra("headline");
+        String explanation = getIntent().getStringExtra("explanation");
+        String correctAnswer = getIntent().getStringExtra("correctAnswer");
+        String imageKey = getIntent().getStringExtra("imageKey");
+
+        // 3. 填装数据
+        tvQuote.setText(headline != null ? headline : "Keep going!");
+        tvExplanation.setText(explanation != null ? explanation : "Explanation missing.");
+        tvCorrectAnswer.setText("Correct Answer: " + (correctAnswer != null ? correctAnswer : "Unknown"));
+
+        // 4. 根据 imageKey 切换图片
+        if (imageKey != null && imageKey.toLowerCase().contains("penguin")) {
+            imgMeme.setImageResource(R.drawable.meme_penguin);
+        } else if (imageKey != null && imageKey.toLowerCase().contains("teacher")) {
+            imgMeme.setImageResource(R.drawable.meme_teacher);
+        } else {
+            imgMeme.setImageResource(R.drawable.meme_supportive);
+        }
+
+        // 5. 按钮逻辑
+        btnBackToQuiz.setOnClickListener(v -> finish());
+
+        btnShareToPost.setOnClickListener(v -> {
+            // 1. 获取之前传过来的数据
+
+
+            // 2. 拿一个 User（跟 QuizActivity 里一样）
+            User currentUser = UserDAO.getInstance().login("TestUser123", "password123");
+            if (currentUser == null) {
+                currentUser = UserDAO.getInstance().register("TestUser123", "password123");
+            }
+
+            // 3. 组装成 QuizFeedback 对象 (根据你截图里的构造函数)
+            QuizFeedback feedback = new QuizFeedback(
+                    "supportive", "Supportive Persona",
+                    headline, explanation, imageKey,
+                    "What is the capital of Australia?", "Sydney", correctAnswer
+            );
+
+            // 4. 初始化 Manager 并调用 shareFeedback
+            MemeCoachManager manager = new MemeCoachManager(
+                    new TemplateFeedbackService(new Random()),
+                    new DemoExplanationProvider(new HashMap<>()),
+                    Executors.newSingleThreadExecutor(),
+                    ContextCompat.getMainExecutor(this)
+            );
+
+            // 5. 执行分享
+            manager.shareFeedback(currentUser, feedback);
+
+            // 6. 提示成功并关闭页面
+            android.widget.Toast.makeText(this, "Shared to Post successfully!", android.widget.Toast.LENGTH_SHORT).show();
+            finish();
+        });
+    }
+}
