@@ -8,9 +8,8 @@ import java.util.Random;
  * @version 1.0
  *
  * Factory that creates a persona from its id ("supportive", "penguin", "teacher").
- *
- * TODO(person 1): skeleton only, see MEMECOACH_PERSON1_TODO.md.
  */
+
 public final class FeedbackPersonaFactory {
     //Unique IDs used to identify the three personas
     public static final String SUPPORTIVE = "supportive";
