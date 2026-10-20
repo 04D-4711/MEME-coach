@@ -62,10 +62,14 @@ public class DataPipeline<T, S> {
 			throw new PersistentDataException(e.getMessage());
 		}
 	}
-
-	private final DataPipeline<Post, String[]> postPipeline = new DataPipeline<>(new ComputerIOFactory(){},
-			new CSVFormattedFactory(new CSVFormat(5)),
-			new PostSerializer(),
-			"posts"
-	);
 }
+//修改一：app/src/persistentdata/DataPipeline.java
+//原有问题：
+//类中存在一个实例字段 postPipeline，其初始化过程会创建新的 DataPipeline 实例。
+//新实例初始化时又会创建另一个 DataPipeline，形成递归式对象创建，可能导致 StackOverflowError。
+//修改内容：
+//删除 postPipeline 字段及其初始化表达式。
+//
+//预期效果：
+//
+//避免 DataPipeline 创建对象时不断递归初始化，为后续正常构建和使用数据管道消除这一障碍。
