@@ -1,5 +1,7 @@
 package memecoach;
 
+import memecoach.LLMClient;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,10 +30,24 @@ public class HttpLLMClient implements LLMClient {
     private static final int MAX_RESPONSE_LENGTH = 65_536;
     private final URI endpoint;
 
+    // 仅用于课堂 Demo 的临时访问口令；不在这个类中硬编码具体值。
+    private final String demoToken;
+
     /**
      * @param endpointUrl Python API 地址，例如 http://127.0.0.1:8000/api/explain。
      */
     public HttpLLMClient(String endpointUrl) {
+        // 保留原有构造方法，避免之前的测试或本地调用失效。
+        this(endpointUrl, null);
+    }
+
+    /**
+     * 创建带临时口令的 HTTP 客户端。
+     *
+     * @param endpointUrl 后端完整地址，应为 HTTPS 的 /api/explain
+     * @param demoToken 对应 Python backend/.env 里的 DEMO_API_TOKEN
+     */
+    public HttpLLMClient(String endpointUrl, String demoToken) {
         Objects.requireNonNull(endpointUrl, "Endpoint URL cannot be null");
         this.endpoint = URI.create(endpointUrl);
 
@@ -41,6 +57,12 @@ public class HttpLLMClient implements LLMClient {
                 || endpoint.getHost() == null) {
             throw new IllegalArgumentException("Invalid HTTP endpoint: " + endpointUrl);
         }
+        // 防止调用方误传空字符串或在 HTTP 请求头中注入换行。
+        if (demoToken != null && (demoToken.isBlank()
+                || demoToken.contains("\r") || demoToken.contains("\n"))) {
+            throw new IllegalArgumentException("Invalid demo token");
+        }
+        this.demoToken = demoToken;
     }
 
     /**
@@ -64,6 +86,12 @@ public class HttpLLMClient implements LLMClient {
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
             connection.setRequestProperty("Accept", "application/json");
+
+            // 如果提供了临时口令，就通过 HTTP 请求头提交给后端验证。
+            // 不要将 Token 写进 GitLab；跨电脑访问应使用 HTTPS 地址。
+            if (demoToken != null) {
+                connection.setRequestProperty("X-Demo-Token", demoToken);
+            }
 
             // 按 Python ExplanationRequest 约定组装请求 JSON。
             String json = "{\"systemPrompt\":" + encodeJsonString(systemPrompt)
