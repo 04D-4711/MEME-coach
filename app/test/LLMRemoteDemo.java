@@ -7,9 +7,9 @@ import memecoach.LLMClient;
  * 手动检查跨电脑 HTTPS + Demo Token + OpenAI 调用。
  * 运行前在 IntelliJ Run Configuration 中设置以下环境变量：
  * MEMECOACH_API_URL=https://...trycloudflare.com/api/explain
- * DEMO_API_TOKEN=（Python 后端 .env 中配置的临时口令）
+ * DEMO_API_TOKEN=（Python后端 .env中配置的临时口令，来找JR要，每次我网址不一样的）
  *
- * 注意：每次运行都会进行一次可能计费的真实 API 请求。
+ * 注意：每次运行都会进行一次可能计费的真实API请求。
  */
 public class LLMRemoteDemo {
 
