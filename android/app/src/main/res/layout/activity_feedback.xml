@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FA">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp">
+
+        <!-- Meme 图片 (先用安卓默认图标占位) -->
+        <ImageView
+            android:id="@+id/imgMeme"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="centerCrop"
+            android:background="#E0E0E0"
+            android:src="@android:drawable/ic_menu_gallery"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- 语录 -->
+        <TextView
+            android:id="@+id/tvQuote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="You're doing great! Keep going!"
+            android:textSize="20sp"
+            android:textStyle="italic"
+            android:textColor="#333333"
+            app:layout_constraintTop_toBottomOf="@id/imgMeme" />
+
+        <!-- 正确答案 -->
+        <TextView
+            android:id="@+id/tvCorrectAnswer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Correct Answer: Option B"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#4CAF50"
+            app:layout_constraintTop_toBottomOf="@id/tvQuote" />
+
+        <!-- 解释 -->
+        <TextView
+            android:id="@+id/tvExplanation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Here is a detailed explanation of why B is correct..."
+            android:textSize="16sp"
+            android:textColor="#666666"
+            app:layout_constraintTop_toBottomOf="@id/tvCorrectAnswer" />
+
+        <!-- Share to Post 按钮 -->
+        <Button
+            android:id="@+id/btnShareToPost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Share to Post"
+            app:layout_constraintTop_toBottomOf="@id/tvExplanation" />
+
+        <!-- 返回按钮 -->
+        <Button
+            android:id="@+id/btnBackToQuiz"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Continue"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:layout_constraintTop_toBottomOf="@id/btnShareToPost" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <!-- 题目 -->
+    <TextView
+        android:id="@+id/tvQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Question goes here?"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 选项 -->
+    <RadioGroup
+        android:id="@+id/radioGroupOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/tvQuestion">
+
+        <RadioButton android:id="@+id/option1" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Option A" android:textSize="18sp"/>
+        <RadioButton android:id="@+id/option2" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Option B" android:textSize="18sp"/>
+        <RadioButton android:id="@+id/option3" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Option C" android:textSize="18sp"/>
+        <RadioButton android:id="@+id/option4" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Option D" android:textSize="18sp"/>
+    </RadioGroup>
+
+    <!-- 提交按钮 -->
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Submit Answer"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/radioGroupOptions" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
