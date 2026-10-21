@@ -18,6 +18,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // --- 核心：App 启动时确保 Player1 存在 ---
+        // 先尝试登录 Player1
+        dao.model.User currentUser = dao.UserDAO.getInstance().login("Player1", "1234");
+        if (currentUser == null) {
+            // 如果登录失败（说明没这个用户），就注册一个
+            dao.UserDAO.getInstance().register("Player1", "1234");
+        }
+        // ----------------------------------------
+
         Button btnGoToQuiz = findViewById(R.id.btnGoToQuiz);
         btnGoToQuiz.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, QuizActivity.class));

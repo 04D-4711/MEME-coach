@@ -79,10 +79,8 @@ public class FeedbackActivity extends AppCompatActivity {
 
         btnShareToPost.setOnClickListener(v -> {
             // 1. 拿 User
-            User currentUser = UserDAO.getInstance().login("TestUser123", "password123");
-            if (currentUser == null) {
-                currentUser = UserDAO.getInstance().register("TestUser123", "password123");
-            }
+            // 替换成这个
+            User currentUser = new User(java.util.UUID.randomUUID(), User.Role.Member, "Player1", "1234");
 
             // 把这里的 personaId 换成 finalPersonaId
             QuizFeedback feedback = new QuizFeedback(

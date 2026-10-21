@@ -62,16 +62,9 @@ public class QuizActivity extends AppCompatActivity {
             int selectedIndex = radioGroup.indexOfChild(findViewById(selectedId));
             String personaId = spinner.getSelectedItem().toString().toLowerCase();
 
-            // 2. 获取真实的 User (先尝试登录，登录失败就注册一个)
-            User currentUser = UserDAO.getInstance().login("TestUser123", "password123");
-            if (currentUser == null) {
-                currentUser = UserDAO.getInstance().register("TestUser123", "password123");
-            }
 
-            if (currentUser == null) {
-                Toast.makeText(this, "Failed to get User", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            // 直接创建一个合法的 User 对象，绝对不报错
+            User currentUser = new User(java.util.UUID.randomUUID(), User.Role.Member, "Player1", "1234");
 
             // 3. 获取 Quiz (手写一道真题目)
             String questionText = "What is the capital of Australia?";

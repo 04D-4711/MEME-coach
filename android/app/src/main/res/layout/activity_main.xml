@@ -3,21 +3,40 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F8F9FA">
 
+    <!-- 顶部标题 -->
+    <TextView
+        android:id="@+id/tvHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Meme Coach Feed"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:padding="24dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 去答题的按钮 -->
     <Button
         android:id="@+id/btnGoToQuiz"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Take a Quiz"
-        android:layout_margin="16dp"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="Take a New Quiz"
+        android:textSize="18sp"
+        android:backgroundTint="#673AB7"
+        android:layout_marginHorizontal="24dp"
+        app:layout_constraintTop_toBottomOf="@id/tvHeader" />
 
+    <!-- 帖子列表 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerPosts"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:background="@android:color/white"
         app:layout_constraintTop_toBottomOf="@id/btnGoToQuiz"
         app:layout_constraintBottom_toBottomOf="parent" />
 
