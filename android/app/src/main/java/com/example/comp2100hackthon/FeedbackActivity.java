@@ -48,11 +48,21 @@ public class FeedbackActivity extends AppCompatActivity {
         String tempPersonaId = getIntent().getStringExtra("personaId");
 // 新建一个 final 变量，专门给下面用
         final String finalPersonaId = (tempPersonaId != null) ? tempPersonaId : "supportive";
+        boolean isCorrect = getIntent().getBooleanExtra("isCorrect", false);
 
         // 3. 填装数据
         tvQuote.setText(headline != null ? headline : "Keep going!");
         tvExplanation.setText(explanation != null ? explanation : "Explanation missing.");
-        tvCorrectAnswer.setText("Correct Answer: " + (correctAnswer != null ? correctAnswer : "Unknown"));
+
+        // 直接在这里判断，不用在外面先 setText 一次
+        if (isCorrect) {
+            // 答对了：隐藏正确答案
+            tvCorrectAnswer.setVisibility(android.view.View.GONE);
+        } else {
+            // 答错了：显示正确答案（加个判空保护）
+            tvCorrectAnswer.setVisibility(android.view.View.VISIBLE);
+            tvCorrectAnswer.setText("Correct Answer: " + (correctAnswer != null ? correctAnswer : "Unknown"));
+        }
 
         // 4. 根据 imageKey 切换图片
         if (imageKey != null && imageKey.toLowerCase().contains("penguin")) {

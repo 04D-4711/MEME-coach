@@ -83,7 +83,17 @@ public class QuizActivity extends AppCompatActivity {
             coachManager.submitAnswer(currentQuiz, finalUser, selectedIndex, personaId, new FeedbackCallback() {
                 @Override
                 public void onCorrect() {
-                    runOnUiThread(() -> Toast.makeText(QuizActivity.this, "Correct!", Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> {
+                        // 答对也跳转到反馈界面！
+                        Intent intent = new Intent(QuizActivity.this, FeedbackActivity.class);
+                        intent.putExtra("isCorrect", true); // 加个标记告诉下个页面是答对的
+                        intent.putExtra("headline", "Amazing job! You got it right!");
+                        intent.putExtra("explanation", "You are truly a master of this topic.");
+                        intent.putExtra("correctAnswer", currentQuiz.getOption(currentQuiz.getCorrectAnswer()));
+                        intent.putExtra("imageKey", "supportive"); // 答对给个鼓励的图
+                        intent.putExtra("personaId", personaId);
+                        startActivity(intent);
+                    });
                 }
 
                 @Override
