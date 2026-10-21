@@ -5,13 +5,12 @@ import java.util.Objects;
 /**
  * @author Jie Ren
  * @version 1.0
- * 使用大语言模型生成Quiz错误反馈。
+ * Generates quiz feedback with an LLM.
  *
- * 实现FeedbackService接口。
+ * Implements the FeedbackService interface.
  *
- * 如果 LLM 调用失败，自动使用本地反馈服务。
- * 这样即使没有网络，Meme Coach也能正常工作。
- * (可是中文真的太好用了你知道吗）
+ * Falls back to the local feedback service if the LLM request fails.
+ * Meme Coach remains usable without a network connection.
  */
 
 public class LLMFeedbackService implements FeedbackService {
@@ -36,8 +35,7 @@ public class LLMFeedbackService implements FeedbackService {
         QuizFeedback local =
                 fallback.generateFeedback(request, persona);
 
-        String systemPrompt =
-                "You are a friendly quiz tutor. "
+        String systemPrompt = "You are a friendly quiz tutor. "
                         + persona.getSystemPromptStyle()
                         + "\nExplain why the provided correct answer is correct. "
                         + "Use simple English and no more than three sentences. "
@@ -45,8 +43,7 @@ public class LLMFeedbackService implements FeedbackService {
                         + "Do not insult the student. "
                         + "Return only the explanation.";
 
-        String userPrompt =
-                "Question: " + request.question()
+        String userPrompt = "Question: " + request.question()
                         + "\nStudent answer: " + request.selectedAnswer()
                         + "\nCorrect answer: " + request.correctAnswer()
                         + "\nReference explanation: "
@@ -82,4 +79,3 @@ public class LLMFeedbackService implements FeedbackService {
         }
     }
 }
-

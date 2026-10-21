@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  This class does not store the OpenAI API key and does not directly access OpenAI.
  The use of HttpURLConnection is to ensure compatibility with both regular Java and Android.
  */
-//obviously I dont know how to do this so thanks the help to Openai chatGPT
+
 public class HttpLLMClient implements LLMClient {
     private static final Pattern EXPLANATION_PATTERN = Pattern.compile(
             "\"explanation\"\\s*:\\s*\"((?:\\\\.|[^\"\\\\])*)\""
@@ -28,11 +28,10 @@ public class HttpLLMClient implements LLMClient {
     private static final int MAX_RESPONSE_LENGTH = 65_536;
     private final URI endpoint;
 
-    // 仅用于课堂 Demo 的临时访问口令；不在这个类中硬编码具体值。
     private final String demoToken;
 
     /**
-     * @param endpointUrl Python API 地址，例如 http://127.0.0.1:8000/api/explain。
+     * @param endpointUrl URL of the Python API, e.g. http://127.0.0.1:8000/api/explain
      */
     public HttpLLMClient(String endpointUrl) {
         this(endpointUrl, null);
@@ -78,8 +77,9 @@ public class HttpLLMClient implements LLMClient {
         try {
             connection = (HttpURLConnection) endpoint.toURL().openConnection();
             connection.setRequestMethod("POST");
-            connection.setConnectTimeout(5_000);  // 最长等待连接 5 秒
-            connection.setReadTimeout(25_000);   // 最长等待 AI 回复 25 秒
+            connection.setInstanceFollowRedirects(false);
+            connection.setConnectTimeout(5_000);
+            connection.setReadTimeout(25_000);
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
             connection.setRequestProperty("Accept", "application/json");
