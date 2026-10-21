@@ -20,13 +20,35 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         return new ViewHolder(view);
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Post post = posts.get(position);
-        // 注意：这里如果有报错，说明你们的 Post 类里获取标题的方法不叫 getTopic()
-        // 可能是 topic() 或者 getContent()，把光标放上去按 Option+Enter 看看
-        holder.tvTopic.setText(post.topic);
-        holder.tvAuthor.setText("Author ID: " + post.poster);
+
+        // 1. 获取帖子里的第一条 Message 作为正文
+        String content = "No content";
+        try {
+            // 尝试用 getAtIndex(0) 拿第一条消息
+            dao.model.Message firstMessage = post.messages.getAtIndex(0);
+            if (firstMessage != null) {
+                content = firstMessage.message();
+            }
+        } catch (Exception e) {
+            // 如果报错，尝试用迭代器拿第一条
+            try {
+                java.util.Iterator<dao.model.Message> it = post.messages.getAll();
+                if (it.hasNext()) {
+                    content = it.next().message();
+                }
+            } catch (Exception ex) {}
+        }
+
+        // 2. 展示正文
+        holder.tvTopic.setText(content);
+
+        // 3. 截取 Author ID 前8位显示（因为帖子实际存的是 UUID）
+        String authorId = post.poster != null ? post.poster.toString().substring(0, 8) : "Unknown";
+        holder.tvAuthor.setText("Poster: " + authorId);
     }
 
     @Override

@@ -82,11 +82,13 @@ public class FeedbackActivity extends AppCompatActivity {
             // 替换成这个
             User currentUser = new User(java.util.UUID.randomUUID(), User.Role.Member, "Player1", "1234");
 
-            // 把这里的 personaId 换成 finalPersonaId
+            // 找到这段代码替换
             QuizFeedback feedback = new QuizFeedback(
                     finalPersonaId, finalPersonaId + " Persona",
                     headline, explanation, imageKey,
-                    "What is the capital of Australia?", "Sydney", correctAnswer
+                    "What does DAO stand for?", // 替换成真实题目
+                    "Data Analysis Object",     // 替换成真实错误选项
+                    correctAnswer
             );
 
             // 3. 初始化 Manager
