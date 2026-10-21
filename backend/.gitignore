@@ -1,0 +1,14 @@
+
+#environemnt
+.venv/
+
+#API Key
+.env
+.env.*
+
+#Pythoncache
+__pycache__/
+*.pyc
+
+# 本地 IDE 配置
+.idea/
