@@ -35,7 +35,9 @@ public class QuizActivity extends AppCompatActivity {
     private MemeCoachManager coachManager;
     private Spinner spinner;
     private DemoQuizCatalog.Question currentQuestion;
-    private int currentQuizIndex = new Random().nextInt(3);
+    // 全局静态变量，确保每次打开界面都会换下一题
+    private static int globalQuizIndex = 0;
+    private int currentQuizIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +86,9 @@ public class QuizActivity extends AppCompatActivity {
                 ContextCompat.getMainExecutor(this)
         );
 
-        // 加载第一道题
+        // 从全局静态变量取当前题号，并让全局变量加1，为下一次打开做准备
+        currentQuizIndex = globalQuizIndex;
+        globalQuizIndex = (globalQuizIndex + 1) % DemoQuizCatalog.count();
         loadQuiz(currentQuizIndex);
 
         RadioGroup radioGroup = findViewById(R.id.radioGroupOptions);
@@ -93,7 +97,8 @@ public class QuizActivity extends AppCompatActivity {
 
         // 换题按钮
         btnNextQuiz.setOnClickListener(v -> {
-            currentQuizIndex++;
+            currentQuizIndex = globalQuizIndex;
+            globalQuizIndex = (globalQuizIndex + 1) % DemoQuizCatalog.count();
             loadQuiz(currentQuizIndex);
         });
 
