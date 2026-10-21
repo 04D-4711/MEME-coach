@@ -1,10 +1,32 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
 }
 
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use {
+        localProperties.load(it)
+    }
+}
+
+fun escapeBuildConfigString(value: String): String {
+    return "\"" + value
+        .replace("\\", "\\\\")
+        .replace("\"", "\\\"") + "\""
+}
+
+
 android {
     namespace = "com.example.comp2100hackthon"
     compileSdk = 35
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "com.example.comp2100hackthon"
@@ -14,6 +36,22 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "LLM_API_URL",
+            escapeBuildConfigString(
+                localProperties.getProperty("LLM_API_URL", "")
+            )
+        )
+
+        buildConfigField(
+            "String",
+            "DEMO_API_TOKEN",
+            escapeBuildConfigString(
+                localProperties.getProperty("DEMO_API_TOKEN", "")
+            )
+        )
     }
 
     buildTypes {

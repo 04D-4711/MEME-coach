@@ -24,6 +24,11 @@ import memecoach.DemoExplanationProvider;
 import attachments.Quiz;
 import dao.UserDAO;
 
+import memecoach.FeedbackService;
+import memecoach.LLMClient;
+import memecoach.LLMFeedbackService;
+import memecoach.HttpLLMClient;
+
 public class QuizActivity extends AppCompatActivity {
 
     private MemeCoachManager coachManager;
@@ -42,12 +47,31 @@ public class QuizActivity extends AppCompatActivity {
         spinner.setAdapter(adapter);
 
         // 2. 初始化 MemeCoachManager (修正了参数)
+
+        // 2. 初始化反馈服务：优先使用 AI，失败时回退到本地模板
+        FeedbackService fallback = new TemplateFeedbackService(new Random());
+        FeedbackService feedbackService = fallback;
+
+        String endpoint = BuildConfig.LLM_API_URL;
+        String token = BuildConfig.DEMO_API_TOKEN;
+
+        if (endpoint != null && !endpoint.trim().isEmpty()
+                && token != null && !token.trim().isEmpty()) {
+            try {
+                LLMClient client = new HttpLLMClient(endpoint, token);
+                feedbackService = new LLMFeedbackService(client, fallback);
+            } catch (IllegalArgumentException e) {
+                // 配置不合法时继续使用本地模板反馈
+            }
+        }
+
         coachManager = new MemeCoachManager(
-                new TemplateFeedbackService(new Random()),
+                feedbackService,
                 new DemoExplanationProvider(new HashMap<>()),
                 Executors.newSingleThreadExecutor(),
                 ContextCompat.getMainExecutor(this)
         );
+
 
         RadioGroup radioGroup = findViewById(R.id.radioGroupOptions);
         Button btnSubmit = findViewById(R.id.btnSubmit);
