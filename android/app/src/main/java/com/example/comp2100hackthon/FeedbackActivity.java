@@ -39,10 +39,15 @@ public class FeedbackActivity extends AppCompatActivity {
         // (如果 Intent 传对象报错，我们需要让 QuizFeedback 实现 Serializable，或者直接传 String)
         // 为了最稳妥，我直接用 String 传值。
 
+
         String headline = getIntent().getStringExtra("headline");
         String explanation = getIntent().getStringExtra("explanation");
         String correctAnswer = getIntent().getStringExtra("correctAnswer");
         String imageKey = getIntent().getStringExtra("imageKey");
+
+        String tempPersonaId = getIntent().getStringExtra("personaId");
+// 新建一个 final 变量，专门给下面用
+        final String finalPersonaId = (tempPersonaId != null) ? tempPersonaId : "supportive";
 
         // 3. 填装数据
         tvQuote.setText(headline != null ? headline : "Keep going!");
@@ -61,24 +66,22 @@ public class FeedbackActivity extends AppCompatActivity {
         // 5. 按钮逻辑
         btnBackToQuiz.setOnClickListener(v -> finish());
 
+
         btnShareToPost.setOnClickListener(v -> {
-            // 1. 获取之前传过来的数据
-
-
-            // 2. 拿一个 User（跟 QuizActivity 里一样）
+            // 1. 拿 User
             User currentUser = UserDAO.getInstance().login("TestUser123", "password123");
             if (currentUser == null) {
                 currentUser = UserDAO.getInstance().register("TestUser123", "password123");
             }
 
-            // 3. 组装成 QuizFeedback 对象 (根据你截图里的构造函数)
+            // 把这里的 personaId 换成 finalPersonaId
             QuizFeedback feedback = new QuizFeedback(
-                    "supportive", "Supportive Persona",
+                    finalPersonaId, finalPersonaId + " Persona",
                     headline, explanation, imageKey,
                     "What is the capital of Australia?", "Sydney", correctAnswer
             );
 
-            // 4. 初始化 Manager 并调用 shareFeedback
+            // 3. 初始化 Manager
             MemeCoachManager manager = new MemeCoachManager(
                     new TemplateFeedbackService(new Random()),
                     new DemoExplanationProvider(new HashMap<>()),
@@ -86,12 +89,26 @@ public class FeedbackActivity extends AppCompatActivity {
                     ContextCompat.getMainExecutor(this)
             );
 
-            // 5. 执行分享
+            // 4. 执行分享（存入 PostDAO）
             manager.shareFeedback(currentUser, feedback);
 
-            // 6. 提示成功并关闭页面
+            // 5. 🔥 触发持久化：把内存里的数据存到手机文件里
+            try {
+                // 如果这里报错标红，按 Option + Enter 导入 DataManager
+                // 刘同学的 DataManager 通常长这样：
+                persistentdata.DataManager.getInstance(getApplicationContext()).writeAll();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // 6. 提示成功
             android.widget.Toast.makeText(this, "Shared to Post successfully!", android.widget.Toast.LENGTH_SHORT).show();
-            finish();
+
+            // 7. 🔥 跳转回主界面，并清空中间的所有页面栈
+            android.content.Intent intent = new android.content.Intent(FeedbackActivity.this, MainActivity.class);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish(); // 关闭当前的反馈页
         });
     }
 }

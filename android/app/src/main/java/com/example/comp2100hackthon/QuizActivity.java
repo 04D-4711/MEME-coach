@@ -94,6 +94,7 @@ public class QuizActivity extends AppCompatActivity {
                         intent.putExtra("explanation", feedback.explanation());
                         intent.putExtra("correctAnswer", feedback.correctAnswer());
                         intent.putExtra("imageKey", feedback.imageKey());
+                        intent.putExtra("personaId", personaId);
                         startActivity(intent);
                     });
                 }

@@ -23,6 +23,13 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, QuizActivity.class));
         });
 
+        try {
+            // 如果标红按 Option + Enter 导入
+            persistentdata.DataManager.getInstance(getApplicationContext()).readAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         RecyclerView recycler = findViewById(R.id.recyclerPosts);
         recycler.setLayoutManager(new LinearLayoutManager(this));
 
