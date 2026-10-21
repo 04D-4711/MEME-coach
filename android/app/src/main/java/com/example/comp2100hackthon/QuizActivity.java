@@ -62,16 +62,9 @@ public class QuizActivity extends AppCompatActivity {
             int selectedIndex = radioGroup.indexOfChild(findViewById(selectedId));
             String personaId = spinner.getSelectedItem().toString().toLowerCase();
 
-            // 2. 获取真实的 User (先尝试登录，登录失败就注册一个)
-            User currentUser = UserDAO.getInstance().login("TestUser123", "password123");
-            if (currentUser == null) {
-                currentUser = UserDAO.getInstance().register("TestUser123", "password123");
-            }
 
-            if (currentUser == null) {
-                Toast.makeText(this, "Failed to get User", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            // 直接创建一个合法的 User 对象，绝对不报错
+            User currentUser = new User(java.util.UUID.randomUUID(), User.Role.Member, "Player1", "1234");
 
             // 3. 获取 Quiz (手写一道真题目)
             String questionText = "What is the capital of Australia?";
@@ -83,7 +76,17 @@ public class QuizActivity extends AppCompatActivity {
             coachManager.submitAnswer(currentQuiz, finalUser, selectedIndex, personaId, new FeedbackCallback() {
                 @Override
                 public void onCorrect() {
-                    runOnUiThread(() -> Toast.makeText(QuizActivity.this, "Correct!", Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> {
+                        // 答对也跳转到反馈界面！
+                        Intent intent = new Intent(QuizActivity.this, FeedbackActivity.class);
+                        intent.putExtra("isCorrect", true); // 加个标记告诉下个页面是答对的
+                        intent.putExtra("headline", "Amazing job! You got it right!");
+                        intent.putExtra("explanation", "You are truly a master of this topic.");
+                        intent.putExtra("correctAnswer", currentQuiz.getOption(currentQuiz.getCorrectAnswer()));
+                        intent.putExtra("imageKey", "supportive"); // 答对给个鼓励的图
+                        intent.putExtra("personaId", personaId);
+                        startActivity(intent);
+                    });
                 }
 
                 @Override
@@ -94,6 +97,7 @@ public class QuizActivity extends AppCompatActivity {
                         intent.putExtra("explanation", feedback.explanation());
                         intent.putExtra("correctAnswer", feedback.correctAnswer());
                         intent.putExtra("imageKey", feedback.imageKey());
+                        intent.putExtra("personaId", personaId);
                         startActivity(intent);
                     });
                 }
