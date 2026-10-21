@@ -1,5 +1,6 @@
 package com.example.comp2100hackthon;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -42,6 +43,8 @@ public class FeedbackActivity extends AppCompatActivity {
 
         String headline = getIntent().getStringExtra("headline");
         String explanation = getIntent().getStringExtra("explanation");
+        String tempUserAnswer = getIntent().getStringExtra("userAnswer");
+        final String finalUserAnswer = (tempUserAnswer != null) ? tempUserAnswer : "Unknown";
         String correctAnswer = getIntent().getStringExtra("correctAnswer");
         String imageKey = getIntent().getStringExtra("imageKey");
 
@@ -49,6 +52,8 @@ public class FeedbackActivity extends AppCompatActivity {
 // 新建一个 final 变量，专门给下面用
         final String finalPersonaId = (tempPersonaId != null) ? tempPersonaId : "supportive";
         boolean isCorrect = getIntent().getBooleanExtra("isCorrect", false);
+        String tempQuestionText = getIntent().getStringExtra("questionText");
+        final String questionText = (tempQuestionText != null) ? tempQuestionText : "Unknown Question";
 
         // 3. 填装数据
         tvQuote.setText(headline != null ? headline : "Keep going!");
@@ -73,20 +78,26 @@ public class FeedbackActivity extends AppCompatActivity {
             imgMeme.setImageResource(R.drawable.meme_supportive);
         }
 
-        // 5. 按钮逻辑
-        btnBackToQuiz.setOnClickListener(v -> finish());
+        btnBackToQuiz.setOnClickListener(v -> {
+            // 重新启动 QuizActivity，让它抽下一题
+            Intent intent = new Intent(FeedbackActivity.this, QuizActivity.class);
+            startActivity(intent);
+            finish(); // 关掉当前的反馈页
+        });
 
 
         btnShareToPost.setOnClickListener(v -> {
             // 1. 拿 User
             // 替换成这个
-            User currentUser = new User(java.util.UUID.randomUUID(), User.Role.Member, "Player1", "1234");
+            User currentUser = new User(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), User.Role.Member, "Player1", "1234");
 
-            // 把这里的 personaId 换成 finalPersonaId
+            // 找到这段代码替换
             QuizFeedback feedback = new QuizFeedback(
                     finalPersonaId, finalPersonaId + " Persona",
                     headline, explanation, imageKey,
-                    "What is the capital of Australia?", "Sydney", correctAnswer
+                    questionText, // 👈 把写死的题目替换成真实的变量
+                    finalUserAnswer,
+                    correctAnswer
             );
 
             // 3. 初始化 Manager

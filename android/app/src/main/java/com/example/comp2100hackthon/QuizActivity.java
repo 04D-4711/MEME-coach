@@ -1,55 +1,65 @@
+
 package com.example.comp2100hackthon;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.Executors;
 
-import dao.model.User;
-import memecoach.MemeCoachManager;
-import memecoach.QuizFeedback;
-import memecoach.FeedbackCallback;
-import memecoach.TemplateFeedbackService;
-import memecoach.DemoExplanationProvider;
-
-// 如果这里报错找不到 Quiz 和 User，按 Option+Enter 自动导入一下
 import attachments.Quiz;
-import dao.UserDAO;
-
+import dao.model.User;
+import memecoach.DemoExplanationProvider;
+import memecoach.FeedbackCallback;
 import memecoach.FeedbackService;
+import memecoach.HttpLLMClient;
 import memecoach.LLMClient;
 import memecoach.LLMFeedbackService;
-import memecoach.HttpLLMClient;
+import memecoach.MemeCoachManager;
+import memecoach.QuizFeedback;
+import memecoach.TemplateFeedbackService;
 
 public class QuizActivity extends AppCompatActivity {
 
     private MemeCoachManager coachManager;
     private Spinner spinner;
+    private DemoQuizCatalog.Question currentQuestion;
+    private int currentQuizIndex = new Random().nextInt(3);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
-        // 1. 初始化下拉菜单
+        // 初始化人物设定下拉菜单
         spinner = findViewById(R.id.spinnerPersona);
+
         String[] personas = {"Supportive", "Penguin", "Teacher"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, personas);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                personas
+        );
+        adapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item
+        );
         spinner.setAdapter(adapter);
 
-        // 2. 初始化 MemeCoachManager (修正了参数)
+        // 初始化反馈服务：优先使用 AI，失败时回退到本地模板
+        FeedbackService fallback =
+                new TemplateFeedbackService(new Random());
 
-        // 2. 初始化反馈服务：优先使用 AI，失败时回退到本地模板
-        FeedbackService fallback = new TemplateFeedbackService(new Random());
         FeedbackService feedbackService = fallback;
 
         String endpoint = BuildConfig.LLM_API_URL;
@@ -67,70 +77,197 @@ public class QuizActivity extends AppCompatActivity {
 
         coachManager = new MemeCoachManager(
                 feedbackService,
-                new DemoExplanationProvider(new HashMap<>()),
+                new DemoExplanationProvider(
+                        DemoQuizCatalog.explanations()
+                ),
                 Executors.newSingleThreadExecutor(),
                 ContextCompat.getMainExecutor(this)
         );
 
+        // 加载第一道题
+        loadQuiz(currentQuizIndex);
 
         RadioGroup radioGroup = findViewById(R.id.radioGroupOptions);
         Button btnSubmit = findViewById(R.id.btnSubmit);
+        Button btnNextQuiz = findViewById(R.id.btnNextQuiz);
 
+        // 换题按钮
+        btnNextQuiz.setOnClickListener(v -> {
+            currentQuizIndex++;
+            loadQuiz(currentQuizIndex);
+        });
+
+        // 提交按钮
         btnSubmit.setOnClickListener(v -> {
-            // 1. 拿到用户选的下拉框和选项
             int selectedId = radioGroup.getCheckedRadioButtonId();
+
             if (selectedId == -1) {
-                Toast.makeText(this, "Please select an option!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(
+                        this,
+                        "Please select an option!",
+                        Toast.LENGTH_SHORT
+                ).show();
                 return;
             }
-            int selectedIndex = radioGroup.indexOfChild(findViewById(selectedId));
-            String personaId = spinner.getSelectedItem().toString().toLowerCase();
 
+            int selectedIndex = radioGroup.indexOfChild(
+                    findViewById(selectedId)
+            );
 
-            // 直接创建一个合法的 User 对象，绝对不报错
-            User currentUser = new User(java.util.UUID.randomUUID(), User.Role.Member, "Player1", "1234");
+            String personaId = spinner.getSelectedItem()
+                    .toString()
+                    .toLowerCase(java.util.Locale.ROOT);
 
-            // 3. 获取 Quiz (手写一道真题目)
-            String questionText = "What is the capital of Australia?";
-            String[] options = {"Sydney", "Canberra", "Melbourne", "Perth"};
-            Quiz currentQuiz = new Quiz(questionText, options, 1); // 1 是正确答案的索引
+            User currentUser = new User(
+                    java.util.UUID.fromString(
+                            "11111111-1111-1111-1111-111111111111"
+                    ),
+                    User.Role.Member,
+                    "Player1",
+                    "1234"
+            );
 
-            // 4. 调用后端
-            final User finalUser = currentUser;
-            coachManager.submitAnswer(currentQuiz, finalUser, selectedIndex, personaId, new FeedbackCallback() {
-                @Override
-                public void onCorrect() {
-                    runOnUiThread(() -> {
-                        // 答对也跳转到反馈界面！
-                        Intent intent = new Intent(QuizActivity.this, FeedbackActivity.class);
-                        intent.putExtra("isCorrect", true); // 加个标记告诉下个页面是答对的
-                        intent.putExtra("headline", "Amazing job! You got it right!");
-                        intent.putExtra("explanation", "You are truly a master of this topic.");
-                        intent.putExtra("correctAnswer", currentQuiz.getOption(currentQuiz.getCorrectAnswer()));
-                        intent.putExtra("imageKey", "supportive"); // 答对给个鼓励的图
-                        intent.putExtra("personaId", personaId);
-                        startActivity(intent);
-                    });
-                }
+            // 将当前题目转换为 MemeCoachManager 使用的 Quiz
+            Quiz realQuiz = new Quiz(
+                    currentQuestion.text(),
+                    currentQuestion.options(),
+                    currentQuestion.correctIndex()
+            );
 
-                @Override
-                public void onFeedback(QuizFeedback feedback) {
-                    runOnUiThread(() -> {
-                        Intent intent = new Intent(QuizActivity.this, FeedbackActivity.class);
-                        intent.putExtra("headline", feedback.headline());
-                        intent.putExtra("explanation", feedback.explanation());
-                        intent.putExtra("correctAnswer", feedback.correctAnswer());
-                        intent.putExtra("imageKey", feedback.imageKey());
-                        intent.putExtra("personaId", personaId);
-                        startActivity(intent);
-                    });
-                }
+            // 提交答案；错误答案由反馈服务生成解释
+            coachManager.submitAnswer(
+                    realQuiz,
+                    currentUser,
+                    selectedIndex,
+                    personaId,
+                    new FeedbackCallback() {
 
-                @Override
-                public void onError(String message) {
-                    runOnUiThread(() -> Toast.makeText(QuizActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show());
-                }
-            });
+                        @Override
+                        public void onCorrect() {
+                            runOnUiThread(() -> {
+                                Intent intent = new Intent(
+                                        QuizActivity.this,
+                                        FeedbackActivity.class
+                                );
+
+                                intent.putExtra("isCorrect", true);
+                                intent.putExtra(
+                                        "headline",
+                                        "Amazing job! You got it right!"
+                                );
+                                intent.putExtra(
+                                        "explanation",
+                                        "You are truly a master of this topic."
+                                );
+                                intent.putExtra(
+                                        "correctAnswer",
+                                        currentQuestion.options()[
+                                                currentQuestion.correctIndex()
+                                        ]
+                                );
+                                intent.putExtra("imageKey", "supportive");
+                                intent.putExtra("personaId", personaId);
+                                intent.putExtra(
+                                        "userAnswer",
+                                        currentQuestion.options()[selectedIndex]
+                                );
+                                intent.putExtra(
+                                        "questionText",
+                                        currentQuestion.text()
+                                );
+
+                                startActivity(intent);
+                            });
+                        }
+
+                        @Override
+                        public void onFeedback(QuizFeedback feedback) {
+                            runOnUiThread(() -> {
+                                Intent intent = new Intent(
+                                        QuizActivity.this,
+                                        FeedbackActivity.class
+                                );
+
+                                intent.putExtra("isCorrect", false);
+                                intent.putExtra(
+                                        "headline",
+                                        feedback.headline()
+                                );
+                                intent.putExtra(
+                                        "explanation",
+                                        feedback.explanation()
+                                );
+                                intent.putExtra(
+                                        "correctAnswer",
+                                        feedback.correctAnswer()
+                                );
+                                intent.putExtra(
+                                        "imageKey",
+                                        feedback.imageKey()
+                                );
+                                intent.putExtra("personaId", personaId);
+                                intent.putExtra(
+                                        "userAnswer",
+                                        currentQuestion.options()[selectedIndex]
+                                );
+                                intent.putExtra(
+                                        "questionText",
+                                        currentQuestion.text()
+                                );
+
+                                startActivity(intent);
+                            });
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            runOnUiThread(() ->
+                                    Toast.makeText(
+                                            QuizActivity.this,
+                                            "Error: " + message,
+                                            Toast.LENGTH_SHORT
+                                    ).show()
+                            );
+                        }
+                    }
+            );
         });
+    }
+
+    // 动态加载题目
+    private void loadQuiz(int index) {
+        int questionCount = DemoQuizCatalog.count();
+
+        if (questionCount <= 0) {
+            Toast.makeText(
+                    this,
+                    "No quiz questions available.",
+                    Toast.LENGTH_LONG
+            ).show();
+            return;
+        }
+
+        currentQuestion = DemoQuizCatalog.questionAt(
+                index % questionCount
+        );
+
+        TextView tvQuestion = findViewById(R.id.tvQuestion);
+        tvQuestion.setText(currentQuestion.text());
+
+        RadioButton opt1 = findViewById(R.id.option1);
+        RadioButton opt2 = findViewById(R.id.option2);
+        RadioButton opt3 = findViewById(R.id.option3);
+        RadioButton opt4 = findViewById(R.id.option4);
+
+        String[] options = currentQuestion.options();
+
+        opt1.setText(options[0]);
+        opt2.setText(options[1]);
+        opt3.setText(options[2]);
+        opt4.setText(options[3]);
+
+        // 清空上一题的选择状态
+        RadioGroup radioGroup = findViewById(R.id.radioGroupOptions);
+        radioGroup.clearCheck();
     }
 }

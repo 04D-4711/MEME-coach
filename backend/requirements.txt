@@ -1,0 +1,7 @@
+#TO OTHER GROUP MEMBERS:
+#IF YOU WANT TO TRY AI GENERATED ANSWERS PLS INSTALL THESE DEPENDENCIES,
+#BU DONG DE WEN AI JIU XING, jiu shi anzhuang houduan yilai
+fastapi
+uvicorn
+openai
+python-dotenv
