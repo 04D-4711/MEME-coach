@@ -44,7 +44,7 @@ public class TemplateFeedbackService implements FeedbackService {
         String explanation = request.correctExplanation();
 
         //Use a generic message if no explanation exists
-        if (explanation.isBlank()) {
+        if (explanation.trim().isEmpty()) {
             explanation = "No explanation is available for this question. "
                     + "Review the correct answer and the related concept.";
         }
